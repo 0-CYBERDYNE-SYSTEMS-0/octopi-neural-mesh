@@ -1,0 +1,135 @@
+{
+  "server": {
+    "host": "0.0.0.0",
+    "port": 3000,
+    "basePath": "/octopi",
+    "title": "🐙 Octopi Multi-Agent System"
+  },
+  "ai": {
+    "primary": "openai",
+    "fallback": "openrouter",
+    "retryAttempts": 3,
+    "timeout": 30000,
+    "endpoints": {
+      "openai": {
+        "url": "https://api.openai.com/v1/chat/completions",
+        "model": "gpt-4-turbo-preview",
+        "apiKey": "${OPENAI_API_KEY}",
+        "maxTokens": 4096,
+        "temperature": 0.7
+      },
+      "openrouter": {
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "model": "anthropic/claude-3-sonnet",
+        "apiKey": "${OPENROUTER_API_KEY}",
+        "maxTokens": 4096,
+        "temperature": 0.7
+      }
+    }
+  },
+  "wetty": {
+    "command": "/bin/bash",
+    "allowIframe": false,
+    "loginShell": true,
+    "env": {
+      "OCTOPI_AGENT_MODE": "terminal"
+    }
+  },
+  "agents": {
+    "maxConcurrent": 10,
+    "heartbeatInterval": 30000,
+    "taskTimeout": 600000,
+    "specializations": {
+      "coordinator": {
+        "enabled": true,
+        "instances": 1,
+        "priority": 1
+      },
+      "research": {
+        "enabled": true,
+        "maxInstances": 3,
+        "priority": 2
+      },
+      "code": {
+        "enabled": true,
+        "maxInstances": 2,
+        "priority": 2
+      },
+      "devops": {
+        "enabled": true,
+        "maxInstances": 2,
+        "priority": 3
+      },
+      "replication": {
+        "enabled": true,
+        "instances": 1,
+        "priority": 4
+      }
+    }
+  },
+  "replication": {
+    "enabled": false,
+    "maxColonies": 10,
+    "discoveryInterval": 300000,
+    "healthCheckInterval": 60000,
+    "expansionTriggers": {
+      "cpuThreshold": 80,
+      "memoryThreshold": 85,
+      "taskQueueLength": 50,
+      "responseTimeThreshold": 5000
+    },
+    "discoveryMethods": [
+      "ssh-scan",
+      "docker-discovery"
+    ],
+    "targetSystems": [
+      {
+        "host": "localhost",
+        "port": 22,
+        "username": "agent",
+        "keyPath": "~/.ssh/id_rsa"
+      }
+    ]
+  },
+  "session": {
+    "persistence": true,
+    "multiplexer": "tmux",
+    "sessionPrefix": "octopi-",
+    "maxSessions": 20,
+    "idleTimeout": 3600000
+  },
+  "security": {
+    "authentication": {
+      "enabled": true,
+      "jwtSecret": "${JWT_SECRET}",
+      "tokenExpiry": "24h"
+    },
+    "authorization": {
+      "enabled": true,
+      "defaultRole": "agent",
+      "roles": {
+        "admin": ["*"],
+        "coordinator": ["spawn", "manage", "monitor"],
+        "agent": ["execute", "handoff", "report"]
+      }
+    },
+    "rateLimiting": {
+      "enabled": true,
+      "windowMs": 900000,
+      "max": 100
+    }
+  },
+  "logging": {
+    "level": "info",
+    "file": "logs/octopi.log",
+    "maxSize": "50MB",
+    "maxFiles": 10,
+    "auditTrail": true
+  },
+  "monitoring": {
+    "enabled": true,
+    "metricsInterval": 10000,
+    "healthEndpoint": "/health",
+    "metricsEndpoint": "/metrics"
+  }
+}

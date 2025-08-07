@@ -1,0 +1,226 @@
+# === OCTOPI NEURAL MESH SECURITY PROTOCOLS ===
+# Protecting the colony from digital parasites and credential leaks
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+config/config.json
+
+# API Keys & Tokens (Neural pathway security)
+**/api-keys/**
+**/secrets/**
+**/tokens/**
+**/*key*.json
+**/*token*.txt
+**/*secret*.txt
+
+# Node.js Ecosystem
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.npm
+.eslintcache
+.node_repl_history
+*.tsbuildinfo
+.nyc_output
+
+# Runtime Data (Agent memory fragments)
+pids
+*.pid
+*.seed
+*.pid.lock
+lib-cov
+coverage/
+.coverage
+.nyc_output
+.cache/
+.parcel-cache
+
+# Logs (Colony communication traces)
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Runtime directories (Agent spawning grounds)
+.tmp/
+.temp/
+temp/
+tmp/
+
+# Build outputs (Compiled neural networks)
+build/
+dist/
+out/
+.next/
+.nuxt/
+.vuepress/dist
+.serverless/
+
+# IDE & Editor files (Human interface artifacts)
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# OS generated files (Biological system artifacts)
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.tmp
+*.temp
+
+# Terminal & Shell histories (Command traces)
+.bash_history
+.zsh_history
+.fish_history
+
+# SSH Keys (Colony access credentials)
+*.pem
+*.key
+*.pub
+id_rsa*
+id_ecdsa*
+id_ed25519*
+
+# Database files (Agent knowledge storage)
+*.db
+*.sqlite
+*.sqlite3
+*.db3
+
+# Session storage (Agent consciousness persistence)
+sessions/
+.sessions/
+session-*
+
+# Agent spawn directories (Replication staging areas)
+agents/spawned/
+colonies/active/
+replication/staging/
+.agent-cache/
+
+# System monitoring (Colony health metrics)
+metrics/
+monitoring/
+.prometheus/
+grafana/data/
+
+# Testing artifacts (Simulation environments)
+test-results/
+.nyc_output/
+coverage/
+.coverage/
+junit.xml
+test-report.xml
+
+# Backup files (Colony checkpoint saves)
+*.backup
+*.bak
+*.old
+*~
+.backup/
+
+# Archive files (Colony distribution packages)
+*.zip
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# Lock files (Dependency constellation maps)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Jupyter notebooks checkpoints (Research artifacts)
+.ipynb_checkpoints/
+
+# Python artifacts (Legacy biological code)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# === COLONY EXPANSION SECURITY ===
+# These patterns protect against accidental exposure
+# of replication vectors and agent DNA
+
+# Colony configuration backups
+colonies-*.json
+replication-map-*.json
+agent-dna-*.json
+spawn-vectors-*.json
+
+# Network topology maps
+network-scan-*.json
+ssh-targets-*.json
+discovery-cache-*.json
+
+# Agent behavioral patterns
+learning-cache/
+behavior-trees/
+decision-matrices/
+
+# === NEURAL MESH PROTECTION ===
+# Safeguarding the collective consciousness
+
+# Conversation histories
+conversations/
+chat-logs/
+interaction-traces/
+
+# AI model caches
+.ai-cache/
+model-cache/
+embedding-cache/
+
+# Training data (Forbidden knowledge)
+training-data/
+datasets/
+corpus/
+knowledge-base/
+
+# === QUANTUM ENTANGLEMENT PROTOCOLS ===
+# Protecting interdimensional communication channels
+
+# WebRTC signaling data
+.webrtc/
+signaling-cache/
+
+# P2P networking artifacts
+.p2p/
+mesh-topology/
+peer-discovery/
+
+# Distributed consensus logs
+consensus/
+blockchain-cache/
+merkle-trees/
