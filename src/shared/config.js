@@ -28,16 +28,66 @@ const defaultConfig = {
     primary: 'openai',
     fallback: 'openrouter',
     retryAttempts: 3,
-    timeout: 30000
+    timeout: 30000,
+    endpoints: {
+      openai: {
+        url: 'https://api.openai.com/v1/chat/completions',
+        model: 'gpt-4-turbo-preview',
+        apiKey: '${OPENAI_API_KEY}',
+        maxTokens: 4096,
+        temperature: 0.7
+      },
+      openrouter: {
+        url: 'https://openrouter.ai/api/v1/chat/completions',
+        model: 'anthropic/claude-3-sonnet',
+        apiKey: '${OPENROUTER_API_KEY}',
+        maxTokens: 4096,
+        temperature: 0.7
+      }
+    }
   },
   agents: {
     maxConcurrent: 10,
     heartbeatInterval: 30000,
-    taskTimeout: 600000
+    taskTimeout: 600000,
+    specializations: {
+      coordinator: {
+        enabled: true,
+        instances: 1,
+        priority: 1
+      },
+      research: {
+        enabled: true,
+        maxInstances: 3,
+        priority: 2
+      },
+      code: {
+        enabled: true,
+        maxInstances: 2,
+        priority: 2
+      },
+      devops: {
+        enabled: true,
+        maxInstances: 2,
+        priority: 3
+      },
+      replication: {
+        enabled: true,
+        instances: 1,
+        priority: 4
+      }
+    }
   },
   logging: {
     level: 'info',
     file: 'logs/octopi.log'
+  },
+  security: {
+    authentication: {
+      enabled: true,
+      jwtSecret: '${JWT_SECRET}',
+      tokenExpiry: '24h'
+    }
   }
 };
 
