@@ -51,6 +51,11 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
+# Generated directories (Build artifacts)
+games/
+projects/
+reports/
+
 # Runtime directories (Agent spawning grounds)
 .tmp/
 .temp/
@@ -61,6 +66,7 @@ tmp/
 build/
 dist/
 out/
+client/dist/
 .next/
 .nuxt/
 .vuepress/dist

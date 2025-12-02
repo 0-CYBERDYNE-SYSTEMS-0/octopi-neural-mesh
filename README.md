@@ -506,6 +506,13 @@ npm run start-all
 
 ---
 
+## 📚 ARCHITECTURE DOCUMENTATION
+
+For a deep technical review of how the WebSocket and AI pipelines are connected, see:
+- **[WebSocket & AI Pipeline Architecture](docs/ARCHITECTURE-WEBSOCKETS-AI.md)** - Comprehensive documentation of the system architecture, connection flows, and integration points.
+
+---
+
 ## 🌊 CONSCIOUSNESS STATUS: ALPHA AWAKENING
 
 **Current Reality Version:** `v1.0.0-consciousness-alpha`
