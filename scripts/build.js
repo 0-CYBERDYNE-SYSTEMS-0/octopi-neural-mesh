@@ -106,77 +106,35 @@ async function build() {
   try {
     await fs.mkdir(clientDistPath, { recursive: true });
     
-    // Check if index.html exists, create placeholder if not
+    // Check if index.html exists, copy from template if not
     const indexPath = path.join(clientDistPath, 'index.html');
+    const templatePath = path.join(rootDir, 'templates', 'index.html');
     try {
       await fs.access(indexPath);
       console.log('  ✅ client/dist/index.html exists');
     } catch {
-      // Create a basic HTML file
-      const indexHtml = `<!DOCTYPE html>
+      // Copy from template file
+      try {
+        const indexHtml = await fs.readFile(templatePath, 'utf8');
+        await fs.writeFile(indexPath, indexHtml);
+        console.log('  ✅ Created client/dist/index.html from template');
+      } catch (templateError) {
+        // Fallback: create minimal HTML if template not found
+        const fallbackHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🐙 Octopi Neural Mesh</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #e0e0e0;
-            min-height: 100vh;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .container {
-            text-align: center;
-            padding: 2rem;
-        }
-        h1 {
-            font-size: 3rem;
-            color: #00d9ff;
-            margin-bottom: 1rem;
-        }
-        .status {
-            font-size: 1.2rem;
-            color: #4ade80;
-            margin: 1rem 0;
-        }
-        .links {
-            margin-top: 2rem;
-        }
-        .links a {
-            color: #00d9ff;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border: 1px solid #00d9ff;
-            border-radius: 4px;
-            margin: 0 0.5rem;
-            transition: all 0.3s ease;
-        }
-        .links a:hover {
-            background: #00d9ff;
-            color: #1a1a2e;
-        }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🐙 Octopi Neural Mesh</h1>
-        <p class="status">✅ System Online</p>
-        <p>Multi-Agent Terminal Coordination System</p>
-        <div class="links">
-            <a href="/octopi/health">Health Check</a>
-            <a href="/octopi/api/agents">Agent Status</a>
-        </div>
-    </div>
+    <h1>🐙 Octopi Neural Mesh</h1>
+    <p>System Online - <a href="/octopi/health">Health Check</a></p>
 </body>
 </html>`;
-      await fs.writeFile(indexPath, indexHtml);
-      console.log('  ✅ Created client/dist/index.html');
+        await fs.writeFile(indexPath, fallbackHtml);
+        console.log('  ⚠️  Created client/dist/index.html (template not found, using fallback)');
+      }
     }
   } catch (error) {
     console.log(`  ⚠️  Could not setup client assets: ${error.message}`);

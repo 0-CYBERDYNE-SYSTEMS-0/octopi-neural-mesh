@@ -484,18 +484,35 @@ describe('WebSocket and AI Pipeline Integration', () => {
       const completedSteps = new Set();
       const executionOrder = [];
       
-      // Simulate dependency-based execution
-      for (const step of workflow.steps) {
-        const dependenciesMet = !step.dependencies || 
-          step.dependencies.every(dep => completedSteps.has(dep));
+      // Simulate proper dependency-based execution with multiple passes
+      let progress = true;
+      const maxIterations = workflow.steps.length;
+      let iterations = 0;
+      
+      while (progress && iterations < maxIterations) {
+        progress = false;
+        iterations++;
         
-        if (dependenciesMet) {
-          executionOrder.push(step.action);
-          completedSteps.add(step.action);
+        for (const step of workflow.steps) {
+          // Skip already completed steps
+          if (completedSteps.has(step.action)) continue;
+          
+          const dependenciesMet = !step.dependencies || 
+            step.dependencies.every(dep => completedSteps.has(dep));
+          
+          if (dependenciesMet) {
+            executionOrder.push(step.action);
+            completedSteps.add(step.action);
+            progress = true;
+          }
         }
       }
       
+      // Verify all steps were executed
+      expect(executionOrder.length).to.equal(workflow.steps.length);
       expect(executionOrder[0]).to.equal('gather-information');
+      expect(executionOrder[1]).to.equal('analyze-data');
+      expect(executionOrder[2]).to.equal('generate-code');
     });
   });
 
