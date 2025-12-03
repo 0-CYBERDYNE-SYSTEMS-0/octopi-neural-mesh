@@ -772,7 +772,35 @@ class ReplicationAgent extends AgentBase {
       }
     });
 
+    this.terminalCommands.set('octopi-install-guide', {
+      description: 'Show installation commands for various platforms',
+      handler: () => {
+        console.log('\n🚀 Octopi Installation Commands');
+        console.log('================================');
+        console.log('');
+        console.log('📱 Termux (Android):');
+        console.log('  curl -fsSL https://raw.githubusercontent.com/0-CYBERDYNE-SYSTEMS-0/octopi-neural-mesh/main/scripts/install-termux.sh | bash');
+        console.log('');
+        console.log('🍎 macOS:');
+        console.log('  curl -fsSL https://raw.githubusercontent.com/0-CYBERDYNE-SYSTEMS-0/octopi-neural-mesh/main/scripts/install-macos.sh | bash');
+        console.log('');
+        console.log('🐧 Ubuntu/Debian:');
+        console.log('  curl -fsSL https://raw.githubusercontent.com/0-CYBERDYNE-SYSTEMS-0/octopi-neural-mesh/main/scripts/install-ubuntu.sh | bash');
+        console.log('');
+        console.log('📖 For complete guide including AppleScript automation:');
+        console.log('  See TERMINAL_COMMANDS.md in the repository');
+        console.log('');
+        console.log('🔄 Self-Replication Commands:');
+        console.log('  octopi-discover              # Discover systems on network');
+        console.log('  octopi-replicate <host>      # Replicate to specific host');
+        console.log('  octopi-expand                # Expand colony automatically');
+        console.log('  octopi-colonies              # List active colonies');
+        console.log('');
+      }
+    });
+
     console.log('🧬 Replication Agent initialized with colony expansion capabilities');
+    console.log('💡 Tip: Run "octopi-install-guide" for installation commands');
   }
 
   /**
