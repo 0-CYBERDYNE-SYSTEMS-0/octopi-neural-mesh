@@ -787,14 +787,9 @@ class ReplicationAgent extends AgentBase {
         console.log('🐧 Ubuntu/Debian:');
         console.log('  curl -fsSL https://raw.githubusercontent.com/0-CYBERDYNE-SYSTEMS-0/octopi-neural-mesh/main/scripts/install-ubuntu.sh | bash');
         console.log('');
-        console.log('📖 For complete guide including AppleScript automation:');
-        console.log('  See TERMINAL_COMMANDS.md in the repository');
+        console.log('📖 For complete guide: See TERMINAL_COMMANDS.md');
         console.log('');
-        console.log('🔄 Self-Replication Commands:');
-        console.log('  octopi-discover              # Discover systems on network');
-        console.log('  octopi-replicate <host>      # Replicate to specific host');
-        console.log('  octopi-expand                # Expand colony automatically');
-        console.log('  octopi-colonies              # List active colonies');
+        console.log('🔄 Self-Replication: octopi-discover | octopi-replicate <host> | octopi-expand');
         console.log('');
       }
     });

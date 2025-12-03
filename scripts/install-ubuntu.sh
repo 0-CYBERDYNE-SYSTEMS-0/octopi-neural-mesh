@@ -107,7 +107,7 @@ echo ""
 # Step 3: Install additional dependencies
 print_header "Step 3/7: Installing system dependencies"
 print_status "Installing: git, tmux, build-essential, python3"
-$SUDO apt-get install -y git tmux build-essential python3 python3-pip
+$SUDO apt-get install -y git tmux build-essential python3
 print_success "System dependencies installed"
 echo ""
 
