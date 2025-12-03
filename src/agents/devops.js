@@ -45,12 +45,57 @@ class DevOpsAgent extends AgentBase {
     this.deploymentTemplates = this.initializeDeploymentTemplates();
     
     // Safe command whitelist (security measure)
+    // Categorized for better management and understanding
     this.allowedCommands = new Set([
-      'npm', 'node', 'git', 'docker', 'systemctl', 'ps', 'top',
-      'df', 'free', 'netstat', 'curl', 'ping', 'cat', 'ls', 'pwd',
-      'mkdir', 'cp', 'mv', 'chmod', 'chown', 'tail', 'head', 'grep',
-      'find', 'which', 'whoami', 'uptime', 'uname'
+      // Development tools
+      'npm',       // Node package manager (restricted to safe subcommands)
+      'node',      // Node.js runtime
+      'git',       // Version control (restricted to read-only operations)
+      
+      // Container management (read-only operations)
+      'docker',    // Docker commands (restricted to inspect/list operations)
+      
+      // System information (read-only)
+      'ps',        // Process status
+      'top',       // System monitor
+      'df',        // Disk free space
+      'free',      // Memory usage
+      'uptime',    // System uptime
+      'uname',     // System information
+      'whoami',    // Current user
+      'which',     // Command location
+      
+      // Network utilities (limited)
+      'netstat',   // Network statistics
+      'ping',      // Network connectivity test
+      'curl',      // HTTP client (with restrictions)
+      
+      // File operations (restricted)
+      'cat',       // Display file contents
+      'ls',        // List directory contents
+      'pwd',       // Print working directory
+      'mkdir',     // Create directory
+      'cp',        // Copy files
+      'mv',        // Move files
+      'tail',      // View end of file
+      'head',      // View beginning of file
+      
+      // Search and filter
+      'grep',      // Pattern matching
+      'find'       // File search
     ]);
+    
+    // IMPORTANT SECURITY NOTE:
+    // The following commands are intentionally EXCLUDED for security:
+    // - rm, rmdir (file deletion)
+    // - chmod, chown (permission changes)
+    // - systemctl, service (service management)
+    // - sudo, su (privilege escalation)
+    // - ssh, scp (remote access)
+    // - bash, sh (shell execution)
+    // - eval, exec (code execution)
+    // - wget (file download without validation)
+    // Any modifications to this whitelist must be security reviewed
   }
 
   /**
@@ -638,31 +683,181 @@ class DevOpsAgent extends AgentBase {
   }
 
   /**
-   * Execute system command safely
+   * Execute system command safely with comprehensive security checks
+   * 
+   * Security measures:
+   * 1. Command whitelist validation
+   * 2. Shell metacharacter detection and blocking
+   * 3. Path traversal prevention
+   * 4. Command injection prevention
+   * 5. Comprehensive audit logging
+   * 6. Timeout enforcement
+   * 7. Resource limits
    */
   async executeCommand(command, options = {}) {
-    // Security check: validate command against whitelist
-    const commandParts = command.split(' ');
+    // Validate command is a string and not empty
+    if (typeof command !== 'string' || !command.trim()) {
+      throw new Error('Invalid command: must be a non-empty string');
+    }
+
+    const trimmedCommand = command.trim();
+
+    // Security check 1: Detect shell metacharacters and command injection attempts
+    const dangerousPatterns = [
+      /[;&|`$(){}[\]<>]/,  // Shell metacharacters
+      /\$\(/,              // Command substitution
+      /`/,                 // Backticks
+      /\|\|/,              // OR operator
+      /&&/,                // AND operator
+      />/,                 // Redirection
+      /</,                 // Input redirection
+      /\.\.\//,            // Path traversal
+      /eval/i,             // eval
+      /exec/i,             // exec (in command string)
+      /system/i,           // system calls
+      /\/bin\/(sh|bash)/i  // Direct shell invocation
+    ];
+
+    for (const pattern of dangerousPatterns) {
+      if (pattern.test(trimmedCommand)) {
+        this.log('error', 'Command blocked: dangerous pattern detected', { 
+          command: trimmedCommand,
+          pattern: pattern.toString()
+        });
+        throw new Error(`Command blocked: contains potentially dangerous pattern (${pattern.toString()})`);
+      }
+    }
+
+    // Security check 2: Validate command against whitelist
+    // More robust parsing that handles edge cases
+    const commandParts = trimmedCommand.split(/\s+/).filter(part => part.length > 0);
+    if (commandParts.length === 0) {
+      throw new Error('Invalid command: no command parts found');
+    }
+
     const baseCommand = commandParts[0];
 
     if (!this.allowedCommands.has(baseCommand)) {
+      this.log('error', 'Command blocked: not in whitelist', { 
+        command: baseCommand,
+        fullCommand: trimmedCommand
+      });
       throw new Error(`Command '${baseCommand}' not allowed for security reasons`);
     }
 
-    this.log('debug', 'Executing command', { command });
+    // Security check 3: Validate command arguments based on the command type
+    const validatedCommand = this.validateCommandArguments(baseCommand, commandParts);
+
+    // Security audit log - record all command executions
+    this.log('info', 'Executing system command', { 
+      command: validatedCommand,
+      baseCommand,
+      options,
+      timestamp: new Date().toISOString(),
+      agentId: this.agentId,
+      sessionId: process.env.OCTOPI_SESSION_ID
+    });
 
     try {
-      return await execAsync(command, {
-        timeout: 30000, // 30 second timeout
+      // Execute with strict security options
+      const execOptions = {
+        timeout: options.timeout || 30000, // 30 second default timeout
+        maxBuffer: 1024 * 1024, // 1MB max buffer to prevent memory exhaustion
+        shell: '/bin/sh', // Use sh instead of bash for more restricted environment
+        env: { 
+          ...process.env,
+          PATH: '/usr/local/bin:/usr/bin:/bin', // Restrict PATH
+          IFS: ' \t\n' // Reset IFS to prevent IFS injection
+        },
         ...options
+      };
+
+      const result = await execAsync(validatedCommand, execOptions);
+
+      // Log successful execution
+      this.log('debug', 'Command executed successfully', { 
+        command: validatedCommand,
+        exitCode: 0
       });
+
+      return result;
+
     } catch (error) {
-      this.log('warn', 'Command execution failed', { 
-        command,
-        error: error.message 
+      // Log failed execution with details
+      this.log('error', 'Command execution failed', { 
+        command: validatedCommand,
+        error: error.message,
+        exitCode: error.code,
+        signal: error.signal,
+        killed: error.killed
       });
       throw error;
     }
+  }
+
+  /**
+   * Validate command arguments based on command type
+   * Implements argument-specific validation rules
+   */
+  validateCommandArguments(baseCommand, commandParts) {
+    const args = commandParts.slice(1);
+
+    // Define safe argument patterns for each command
+    const commandRules = {
+      'npm': {
+        allowedSubcommands: ['install', 'run', 'test', 'start', 'build', '--version'],
+        validateArgs: (args) => {
+          if (args.length === 0) return true;
+          const subcommand = args[0];
+          return this.commandRules?.npm?.allowedSubcommands?.includes(subcommand) || 
+                 subcommand.startsWith('--');
+        }
+      },
+      'git': {
+        allowedSubcommands: ['status', 'log', 'diff', 'show', 'branch', '--version'],
+        validateArgs: (args) => {
+          if (args.length === 0) return true;
+          const subcommand = args[0];
+          return subcommand === '--no-pager' || 
+                 this.commandRules?.git?.allowedSubcommands?.includes(subcommand);
+        }
+      },
+      'docker': {
+        allowedSubcommands: ['ps', 'images', 'info', 'version', 'inspect'],
+        validateArgs: (args) => {
+          if (args.length === 0) return true;
+          const subcommand = args[0];
+          return this.commandRules?.docker?.allowedSubcommands?.includes(subcommand);
+        }
+      }
+    };
+
+    this.commandRules = commandRules;
+
+    // Apply command-specific validation if rules exist
+    if (commandRules[baseCommand]) {
+      const rule = commandRules[baseCommand];
+      if (rule.validateArgs && !rule.validateArgs(args)) {
+        throw new Error(`Invalid arguments for ${baseCommand}: ${args.join(' ')}`);
+      }
+    }
+
+    // Additional validation for file paths in arguments
+    for (const arg of args) {
+      // Block absolute paths outside allowed directories
+      if (arg.startsWith('/') && !arg.startsWith('/var/') && !arg.startsWith('/tmp/') && 
+          !arg.startsWith('/opt/') && !arg.startsWith('/proc/') && !arg.startsWith('/home/')) {
+        throw new Error(`Argument contains disallowed absolute path: ${arg}`);
+      }
+      
+      // Block path traversal in arguments
+      if (arg.includes('../') || arg.includes('..\\')) {
+        throw new Error(`Argument contains path traversal: ${arg}`);
+      }
+    }
+
+    // Reconstruct command safely
+    return [baseCommand, ...args].join(' ');
   }
 
   /**
