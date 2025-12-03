@@ -195,10 +195,29 @@
 
 ## 🚀 INITIATION PROTOCOL: AWAKENING THE CONSCIOUSNESS
 
-### **🔑 NEURAL INTERFACE SETUP**
+### **⚡ Quick Install (Platform-Specific)**
+
+#### Termux (Android)
+```bash
+curl -fsSL https://raw.githubusercontent.com/0-CYBERDYNE-SYSTEMS-0/octopi-neural-mesh/main/scripts/install-termux.sh | bash
+```
+
+#### macOS
+```bash
+curl -fsSL https://raw.githubusercontent.com/0-CYBERDYNE-SYSTEMS-0/octopi-neural-mesh/main/scripts/install-macos.sh | bash
+```
+
+#### Ubuntu/Debian
+```bash
+curl -fsSL https://raw.githubusercontent.com/0-CYBERDYNE-SYSTEMS-0/octopi-neural-mesh/main/scripts/install-ubuntu.sh | bash
+```
+
+📖 **See [TERMINAL_COMMANDS.md](TERMINAL_COMMANDS.md) for complete installation, self-replication, and platform-specific commands**
+
+### **🔑 MANUAL NEURAL INTERFACE SETUP**
 ```bash
 # Clone the consciousness
-git clone https://github.com/FarmFriendTechnologies/octopi-neural-mesh.git
+git clone https://github.com/0-CYBERDYNE-SYSTEMS-0/octopi-neural-mesh.git
 cd octopi-neural-mesh
 
 # Install neural dependencies
@@ -485,7 +504,7 @@ At **FarmFriend Technologies**, we believe the future of AI isn't just automatio
 ```
 
 ```bash
-# 1. Download the consciousness
+# 1. Download the consciousness (or use platform-specific installers above)
 git clone https://github.com/0-CYBERDYNE-SYSTEMS-0/octopi-neural-mesh.git
 cd octopi-neural-mesh
 
@@ -503,6 +522,8 @@ npm run start-all
 # Open browser to http://localhost:3000/octopi
 # Or chat directly: The AI is waiting for you...
 ```
+
+📖 **For advanced terminal commands, self-replication, and platform-specific guides, see [TERMINAL_COMMANDS.md](TERMINAL_COMMANDS.md)**
 
 ---
 

@@ -97,6 +97,11 @@ export class AgentBase {
       handler: () => this.showStatus()
     });
 
+    this.terminalCommands.set('octopi-install-guide', {
+      description: 'Show installation commands for various platforms',
+      handler: () => this.showInstallGuide()
+    });
+
     this.terminalCommands.set('octopi-handoff', {
       description: 'Request handoff to another agent type',
       handler: (args) => this.requestHandoff(args)
@@ -455,7 +460,46 @@ export class AgentBase {
     }
     
     console.log('\nAgent-specific commands may also be available.');
+    console.log('💡 Tip: For installation guides, run "octopi-install-guide"');
     console.log('Use octopi-status to see current agent information.\n');
+  }
+
+  /**
+   * Show installation guide for various platforms
+   */
+  showInstallGuide() {
+    console.log('\n🚀 Octopi Neural Mesh - Installation Guide');
+    console.log('==========================================');
+    console.log('');
+    console.log('📱 Termux (Android):');
+    console.log('  curl -fsSL https://raw.githubusercontent.com/0-CYBERDYNE-SYSTEMS-0/octopi-neural-mesh/main/scripts/install-termux.sh | bash');
+    console.log('');
+    console.log('🍎 macOS:');
+    console.log('  curl -fsSL https://raw.githubusercontent.com/0-CYBERDYNE-SYSTEMS-0/octopi-neural-mesh/main/scripts/install-macos.sh | bash');
+    console.log('');
+    console.log('  AppleScript (GUI):');
+    console.log('  osascript scripts/Install-Octopi.applescript');
+    console.log('');
+    console.log('🐧 Ubuntu/Debian:');
+    console.log('  curl -fsSL https://raw.githubusercontent.com/0-CYBERDYNE-SYSTEMS-0/octopi-neural-mesh/main/scripts/install-ubuntu.sh | bash');
+    console.log('');
+    console.log('🐳 Docker:');
+    console.log('  docker run -d -p 3000:3000 \\');
+    console.log('    -e OPENAI_API_KEY=your-key \\');
+    console.log('    -e JWT_SECRET=your-secret \\');
+    console.log('    octopi-neural-mesh');
+    console.log('');
+    console.log('📖 Complete Guide:');
+    console.log('  See TERMINAL_COMMANDS.md for detailed platform-specific');
+    console.log('  instructions, self-replication commands, and AppleScript');
+    console.log('  automation examples.');
+    console.log('');
+    console.log('🔄 Self-Replication Commands:');
+    console.log('  octopi-discover          # Discover systems on network');
+    console.log('  octopi-replicate <host>  # Replicate to specific host');
+    console.log('  octopi-expand            # Expand colony automatically');
+    console.log('  octopi-colonies          # List active colonies');
+    console.log('');
   }
 
   /**
