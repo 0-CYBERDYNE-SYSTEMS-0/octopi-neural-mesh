@@ -806,38 +806,36 @@ class DevOpsAgent extends AgentBase {
     const commandRules = {
       'npm': {
         allowedSubcommands: ['install', 'run', 'test', 'start', 'build', '--version'],
-        validateArgs: (args) => {
+        validateArgs: (args, rules) => {
           if (args.length === 0) return true;
           const subcommand = args[0];
-          return this.commandRules?.npm?.allowedSubcommands?.includes(subcommand) || 
+          return rules.npm.allowedSubcommands.includes(subcommand) || 
                  subcommand.startsWith('--');
         }
       },
       'git': {
         allowedSubcommands: ['status', 'log', 'diff', 'show', 'branch', '--version'],
-        validateArgs: (args) => {
+        validateArgs: (args, rules) => {
           if (args.length === 0) return true;
           const subcommand = args[0];
           return subcommand === '--no-pager' || 
-                 this.commandRules?.git?.allowedSubcommands?.includes(subcommand);
+                 rules.git.allowedSubcommands.includes(subcommand);
         }
       },
       'docker': {
         allowedSubcommands: ['ps', 'images', 'info', 'version', 'inspect'],
-        validateArgs: (args) => {
+        validateArgs: (args, rules) => {
           if (args.length === 0) return true;
           const subcommand = args[0];
-          return this.commandRules?.docker?.allowedSubcommands?.includes(subcommand);
+          return rules.docker.allowedSubcommands.includes(subcommand);
         }
       }
     };
 
-    this.commandRules = commandRules;
-
     // Apply command-specific validation if rules exist
     if (commandRules[baseCommand]) {
       const rule = commandRules[baseCommand];
-      if (rule.validateArgs && !rule.validateArgs(args)) {
+      if (rule.validateArgs && !rule.validateArgs(args, commandRules)) {
         throw new Error(`Invalid arguments for ${baseCommand}: ${args.join(' ')}`);
       }
     }
