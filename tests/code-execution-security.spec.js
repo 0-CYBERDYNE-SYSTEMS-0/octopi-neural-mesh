@@ -44,13 +44,8 @@ class MockDevOpsAgent {
 
     // Security check 1: Detect shell metacharacters and command injection attempts
     const dangerousPatterns = [
-      /[;&|`$(){}[\]<>]/,  // Shell metacharacters
-      /\$\(/,              // Command substitution
-      /`/,                 // Backticks
-      /\|\|/,              // OR operator
-      /&&/,                // AND operator
-      />/,                 // Redirection
-      /</,                 // Input redirection
+      /[;&|`$(){}[\]<>]/,  // Shell metacharacters (covers most injection attempts)
+      /\$\(/,              // Command substitution $(...)
       /\.\.\//,            // Path traversal
       /eval/i,             // eval
       /exec/i,             // exec (in command string)
@@ -133,11 +128,13 @@ class MockDevOpsAgent {
     const commandRules = {
       'npm': {
         allowedSubcommands: ['install', 'run', 'test', 'start', 'build', '--version'],
+        allowedFlags: ['--version', '--help', '--save', '--save-dev', '--production'],
         validateArgs: (args, rules) => {
           if (args.length === 0) return true;
           const subcommand = args[0];
+          // Allow whitelisted subcommands or specific whitelisted flags only
           return rules.npm.allowedSubcommands.includes(subcommand) || 
-                 subcommand.startsWith('--');
+                 rules.npm.allowedFlags.includes(subcommand);
         }
       },
       'git': {
@@ -167,8 +164,9 @@ class MockDevOpsAgent {
     }
 
     for (const arg of args) {
-      if (arg.startsWith('/') && !arg.startsWith('/var/') && !arg.startsWith('/tmp/') && 
-          !arg.startsWith('/opt/') && !arg.startsWith('/proc/') && !arg.startsWith('/home/')) {
+      const allowedPathPrefixes = ['/var/', '/tmp/', '/opt/', '/proc/', '/home/'];
+      
+      if (arg.startsWith('/') && !allowedPathPrefixes.some(prefix => arg.startsWith(prefix))) {
         throw new Error(`Argument contains disallowed absolute path: ${arg}`);
       }
       

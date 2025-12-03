@@ -704,13 +704,8 @@ class DevOpsAgent extends AgentBase {
 
     // Security check 1: Detect shell metacharacters and command injection attempts
     const dangerousPatterns = [
-      /[;&|`$(){}[\]<>]/,  // Shell metacharacters
-      /\$\(/,              // Command substitution
-      /`/,                 // Backticks
-      /\|\|/,              // OR operator
-      /&&/,                // AND operator
-      />/,                 // Redirection
-      /</,                 // Input redirection
+      /[;&|`$(){}[\]<>]/,  // Shell metacharacters (covers most injection attempts)
+      /\$\(/,              // Command substitution $(...)
       /\.\.\//,            // Path traversal
       /eval/i,             // eval
       /exec/i,             // exec (in command string)
@@ -806,11 +801,13 @@ class DevOpsAgent extends AgentBase {
     const commandRules = {
       'npm': {
         allowedSubcommands: ['install', 'run', 'test', 'start', 'build', '--version'],
+        allowedFlags: ['--version', '--help', '--save', '--save-dev', '--production'],
         validateArgs: (args, rules) => {
           if (args.length === 0) return true;
           const subcommand = args[0];
+          // Allow whitelisted subcommands or specific whitelisted flags only
           return rules.npm.allowedSubcommands.includes(subcommand) || 
-                 subcommand.startsWith('--');
+                 rules.npm.allowedFlags.includes(subcommand);
         }
       },
       'git': {
@@ -841,10 +838,11 @@ class DevOpsAgent extends AgentBase {
     }
 
     // Additional validation for file paths in arguments
+    const allowedPathPrefixes = ['/var/', '/tmp/', '/opt/', '/proc/', '/home/'];
+    
     for (const arg of args) {
       // Block absolute paths outside allowed directories
-      if (arg.startsWith('/') && !arg.startsWith('/var/') && !arg.startsWith('/tmp/') && 
-          !arg.startsWith('/opt/') && !arg.startsWith('/proc/') && !arg.startsWith('/home/')) {
+      if (arg.startsWith('/') && !allowedPathPrefixes.some(prefix => arg.startsWith(prefix))) {
         throw new Error(`Argument contains disallowed absolute path: ${arg}`);
       }
       
