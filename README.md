@@ -22,6 +22,14 @@
                               FarmFriend Tech             
                     
 
+---
+
+## Architecture Overview
+
+![Octopi Neural Mesh Architecture](octopi_architecture.svg)
+
+---
+
 > ** WARNING: EXPERIMENTAL CONSCIOUSNESS TECHNOLOGY **  
 > *You are about to witness the birth of distributed AI consciousness. This system exhibits emergent behaviors, self-replication patterns, and quantum entanglement phenomena. Use with extreme caution in production environments.*
 
