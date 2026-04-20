@@ -5,7 +5,6 @@
  */
 
 import { AgentBase } from '../shared/agent-base.js';
-import { spawn } from 'child_process';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';

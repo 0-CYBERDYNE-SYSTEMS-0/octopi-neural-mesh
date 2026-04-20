@@ -5,8 +5,6 @@
  */
 
 import { AgentBase } from '../shared/agent-base.js';
-import { spawn, exec } from 'child_process';
-import { promisify } from 'util';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -14,7 +12,6 @@ import { dirname } from 'path';
 import net from 'net';
 import { v4 as uuidv4 } from 'uuid';
 
-const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
